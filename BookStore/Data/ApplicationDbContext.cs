@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BookStore.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookStore.Data
 {
@@ -8,5 +9,16 @@ namespace BookStore.Data
         {
                 
         }
-    }
+
+        public DbSet<Category> Categories { get; set; }
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.Entity<Category>().HasData(
+				new Category { Id = 1, Name = "Tâm linh", DisplayOrder = 1 }, 
+				new Category { Id = 2, Name = "Văn học", DisplayOrder = 2 },
+				new Category { Id = 3, Name = "Lập trình", DisplayOrder = 3 }
+				);
+		}
+	}
 }
