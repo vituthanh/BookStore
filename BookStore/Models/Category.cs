@@ -7,9 +7,14 @@ namespace BookStore.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Category Name is required.")]
+        [MaxLength(20)]
+        [Display(Name = "Category Name")]
         public string Name { get; set; }
 
-        public int DisplayOrder { get; set; }
+        [Required(ErrorMessage = "Display Order is required.")]
+        [Range(1, 100, ErrorMessage = "Display Order must be between 1 and 100.")]
+        [Display(Name = "Display Order")]
+        public int? DisplayOrder { get; set; }
     }
 }
