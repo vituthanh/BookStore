@@ -7,19 +7,19 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookStore.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class CategoryController : Controller
+    public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public CategoryController(IUnitOfWork unitOfWork)
+        public ProductController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
         {
-            var categoryList = _unitOfWork.CategoryRepository.GetAll().OrderBy(x => x.DisplayOrder).ToList();
-            return View(categoryList);
+            var productList = _unitOfWork.ProductRepository.GetAll().OrderBy(x => x.Title).ToList();
+            return View(productList);
         }
 
         public IActionResult Create()
@@ -28,13 +28,13 @@ namespace BookStore.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Category category)
+        public IActionResult Create(Product product)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.CategoryRepository.Add(category);
-                _unitOfWork.CategoryRepository.SaveChanges();
-                TempData["Success"] = "Category created successfully";
+                _unitOfWork.ProductRepository.Add(product);
+                _unitOfWork.ProductRepository.SaveChanges();
+                TempData["Success"] = "Product created successfully";
                 return RedirectToAction("Index");
             }
             return View();
@@ -47,24 +47,24 @@ namespace BookStore.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var category = _unitOfWork.CategoryRepository.Get(x => x.Id == id);
+            var product = _unitOfWork.ProductRepository.Get(x => x.Id == id);
 
-            if (category == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
-            return View(category);
+            return View(product);
         }
 
         [HttpPost]
-        public IActionResult Edit(Category category)
+        public IActionResult Edit(Product product)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.CategoryRepository.Update(category);
-                _unitOfWork.CategoryRepository.SaveChanges();
-                TempData["Success"] = "Category updated successfully";
+                _unitOfWork.ProductRepository.Update(product);
+                _unitOfWork.ProductRepository.SaveChanges();
+                TempData["Success"] = "Product updated successfully";
                 return RedirectToAction("Index");
             }
             return View();
@@ -77,29 +77,29 @@ namespace BookStore.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var category = _unitOfWork.CategoryRepository.Get(x => x.Id == id);
+            var product = _unitOfWork.ProductRepository.Get(x => x.Id == id);
 
-            if (category == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
-            return View(category);
+            return View(product);
         }
 
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePost(int? id)
         {
-            var category = _unitOfWork.CategoryRepository.Get(x => x.Id == id);
+            var product = _unitOfWork.ProductRepository.Get(x => x.Id == id);
 
-            if (category == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
-            _unitOfWork.CategoryRepository.Remove(category);
-            _unitOfWork.CategoryRepository.SaveChanges();
-            TempData["Success"] = "Category deleted successfully";
+            _unitOfWork.ProductRepository.Remove(product);
+            _unitOfWork.ProductRepository.SaveChanges();
+            TempData["Success"] = "Product deleted successfully";
             return RedirectToAction("Index");
         }
     }
