@@ -20,3 +20,7 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+a:visited {
+    text-decoration:none;
+}
