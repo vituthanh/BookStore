@@ -76,11 +76,17 @@ namespace BookStore.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ISBN")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("ListPrice")
@@ -101,6 +107,8 @@ namespace BookStore.DataAccess.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Products");
 
                     b.HasData(
@@ -108,8 +116,10 @@ namespace BookStore.DataAccess.Migrations
                         {
                             Id = 1,
                             Author = "Liên Hoa Sinh, Nguyên Phong",
+                            CategoryId = 1,
                             Description = "Tibetan Book of the Dead",
                             ISBN = "9781570627477",
+                            ImageUrl = "",
                             ListPrice = 285000.0,
                             Price = 285000.0,
                             Price100 = 285000.0,
@@ -120,8 +130,10 @@ namespace BookStore.DataAccess.Migrations
                         {
                             Id = 2,
                             Author = "Bảo Ninh",
+                            CategoryId = 2,
                             Description = "The Sorrow of War",
                             ISBN = "1573225436",
+                            ImageUrl = "",
                             ListPrice = 300000.0,
                             Price = 300000.0,
                             Price100 = 300000.0,
@@ -132,14 +144,27 @@ namespace BookStore.DataAccess.Migrations
                         {
                             Id = 3,
                             Author = "Nguyễn Thanh Việt",
+                            CategoryId = 3,
                             Description = "The Sympathizer",
                             ISBN = "1543618022",
+                            ImageUrl = "",
                             ListPrice = 360000.0,
                             Price = 360000.0,
                             Price100 = 360000.0,
                             Price50 = 360000.0,
                             Title = "Người Cảm Tình Viên"
                         });
+                });
+
+            modelBuilder.Entity("BookStore.Models.Product", b =>
+                {
+                    b.HasOne("BookStore.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 #pragma warning restore 612, 618
         }

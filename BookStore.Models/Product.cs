@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookStore.Models
 {
@@ -40,5 +42,14 @@ namespace BookStore.Models
         [Display(Name = "Giá cho 100+")]
         [Range(1000, 10000000)]
         public double Price100 { get; set; }
+
+        [Display(Name = "Danh mục")]
+        public int CategoryId { get; set; }
+
+        [ForeignKey("CategoryId")]
+        public Category Category { get; set; }
+
+        [ValidateNever]
+        public string ImageUrl { get; set; }
     }
 }
