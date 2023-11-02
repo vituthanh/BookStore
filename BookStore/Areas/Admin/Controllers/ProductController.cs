@@ -22,7 +22,7 @@ namespace BookStore.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            var productList = _unitOfWork.ProductRepository.GetAll().OrderBy(x => x.Title).ToList();
+            var productList = _unitOfWork.ProductRepository.GetAll("Category").OrderBy(x => x.Title).ToList();
             return View(productList);
         }
 
@@ -64,7 +64,7 @@ namespace BookStore.Areas.Admin.Controllers
                     if (!string.IsNullOrEmpty(model.Product.ImageUrl))
                     {
                         // Delete the old image
-                        var oldImagePath = Path.Combine(wwwRootPath, model.Product.ImageUrl);
+                        var oldImagePath = Path.Combine(wwwRootPath, model.Product.ImageUrl.TrimStart('\\'));
 
                         if (System.IO.File.Exists(oldImagePath))
                         {
@@ -104,29 +104,6 @@ namespace BookStore.Areas.Admin.Controllers
             return View(model);
         }
 
-        public IActionResult Edit(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-
-            var product = _unitOfWork.ProductRepository.Get(x => x.Id == id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            var categoryList = _unitOfWork.CategoryRepository.GetAll().Select(x => new SelectListItem
-            {
-                Text = x.Name,
-                Value = x.Id.ToString()
-            }).OrderBy(x => x.Text).ToList();
-
-            return View(product);
-        }
-
         [HttpPost]
         public IActionResult Edit(Product product)
         {
@@ -140,37 +117,38 @@ namespace BookStore.Areas.Admin.Controllers
             return View();
         }
 
-        public IActionResult Delete(int? id)
+        #region API
+        [HttpGet]
+        public IActionResult GetAll()
         {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-
-            var product = _unitOfWork.ProductRepository.Get(x => x.Id == id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return View(product);
+            var productList = _unitOfWork.ProductRepository.GetAll("Category").OrderBy(x => x.Title).ToList();
+            return Json(new { data = productList });
         }
 
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeletePost(int? id)
+        [HttpDelete]
+        public IActionResult Delete(int? id)
         {
             var product = _unitOfWork.ProductRepository.Get(x => x.Id == id);
-
             if (product == null)
             {
-                return NotFound();
+                return Json(new { success = false, message = "Error while deleting" });
+            }
+
+            if (!string.IsNullOrEmpty(product.ImageUrl)) 
+            {
+                var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, product.ImageUrl.TrimStart('\\'));
+
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
             }
 
             _unitOfWork.ProductRepository.Remove(product);
-            _unitOfWork.ProductRepository.SaveChanges();
-            TempData["Success"] = "Product deleted successfully";
-            return RedirectToAction("Index");
+            _unitOfWork.SaveChanges();
+
+            return Json(new { success = true, message = "Product deleted successfully" });
         }
+        #endregion
     }
 }
